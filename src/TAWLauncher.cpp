@@ -178,6 +178,7 @@ int exec_player(std::string player, std::string composition,
 #endif
 }
 
+
 int main(int argc, char* argv[]) {
 	if (argc < 2) {
 		std::cerr << "Usage: " << argv[0]
@@ -203,6 +204,7 @@ int main(int argc, char* argv[]) {
 			if (a.find("taw://") == 0) {
 				// Is a TAW URL
 				a = a.substr(6);
+				a = url_decode(a);
 				std::vector<std::string> taw = split(a, ':');
 				if (taw.size() < 3) {
 					std::cerr
@@ -258,4 +260,9 @@ int main(int argc, char* argv[]) {
 	}
 
 	return exec_player(player, composition, playerArgs);
+}
+
+
+int wmain(int argc, char* argv[]) {
+	return main(argc, argv);
 }
