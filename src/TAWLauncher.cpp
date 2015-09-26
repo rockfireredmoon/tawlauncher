@@ -108,8 +108,9 @@ std::string dirname(std::string path) {
 
 void set_cwd(std::string cwd) {
 	std::cout << "Setting working directory to " << cwd << "\n";
-
-	chdir(cwd.c_str());
+	if(chdir(cwd.c_str()) != 0) {
+		std::cerr << "Warning. Failed to set working directory to " << cwd << std::endl;
+	}
 }
 
 std::string get_cwd() {
@@ -147,37 +148,38 @@ int exec_player(std::string player, std::string composition,
 		DWORD dw = GetLastError();
 		char szMsg[250];
 		FormatMessage(
-		FORMAT_MESSAGE_FROM_SYSTEM, 0, dw, 0, szMsg, sizeof(szMsg),
-		NULL);
+				FORMAT_MESSAGE_FROM_SYSTEM, 0, dw, 0, szMsg, sizeof(szMsg),
+				NULL);
 		std::cerr << "Failed to open player. " << szMsg << std::endl;
 		return 1 + ret;
 	} else
-		return 0;
+	return 0;
 
 #else
 	std::string programPath = "/opt/wine-staging/bin/wine";
 	pid_t pid = fork();
 	switch (pid) {
-		case -1:
-		std::cerr << "Fork failed.\n";
+	case -1:
+		std::cerr << "Fork failed." << "." << endl;
 		return 1;
-		case 0:
-		execlp(programPath.c_str(), programPath.c_str(), player.c_str(), composition.c_str(), (char*)NULL); /* Execute the program */
-		std::cerr << "Exec failed.\n";
+	case 0:
+		execlp(programPath.c_str(), programPath.c_str(), player.c_str(),
+				composition.c_str(), (char*) NULL); /* Execute the program */
+		std::cerr << "Exec failed." << "." << endl;
 		return 1;
-		default:
-		std::cout << "Process created with pid " << pid << "\n";
+	default:
+		std::cout << "Process created with pid " << pid << "." << endl;
 		int status;
 
 		while (!WIFEXITED(status)) {
 			waitpid(pid, &status, 0);
 		}
-		std::cout << "Process exited with " << WEXITSTATUS(status) << "\n";
+		std::cout << "Process exited with " << WEXITSTATUS(status) << "."
+				<< endl;
 		return 0;
 	}
 #endif
 }
-
 
 int main(int argc, char* argv[]) {
 	if (argc < 2) {
@@ -255,13 +257,18 @@ int main(int argc, char* argv[]) {
 	cout << "Player:" << player << endl;
 	cout << "Composition:" << composition << endl;
 
+	while(composition.length() > 0 && composition.substr(composition.length() - 1) == "/") {
+		composition = composition.substr(0, composition.length() - 1);
+	}
+
+	std::cout << "WATS:" << wat.size() << endl;
 	if (wat.size() > 0) {
 		composition = composition + "#web_auth_token=" + url_encode(wat);
+		std::cout << "Final comp: " << composition << "." << endl;
 	}
 
 	return exec_player(player, composition, playerArgs);
 }
-
 
 int wmain(int argc, char* argv[]) {
 	return main(argc, argv);
