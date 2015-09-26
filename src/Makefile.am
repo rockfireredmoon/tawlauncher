@@ -1,0 +1,3 @@
+bin_PROGRAMS=TAWLauncher
+TAWLauncher_SOURCES=TAWLauncher.cpp
+
