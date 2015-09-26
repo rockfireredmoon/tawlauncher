@@ -108,11 +108,8 @@ std::string dirname(std::string path) {
 
 void set_cwd(std::string cwd) {
 	std::cout << "Setting working directory to " << cwd << "\n";
-#if defined(_WIN32) || defined(WIN32)
-	// TODO
-#else
+
 	chdir(cwd.c_str());
-#endif
 }
 
 std::string get_cwd() {
