@@ -107,7 +107,6 @@ std::string dirname(std::string path) {
 }
 
 void set_cwd(std::string cwd) {
-	std::cout << "Setting working directory to " << cwd << "\n";
 	if(chdir(cwd.c_str()) != 0) {
 		std::cerr << "Warning. Failed to set working directory to " << cwd << std::endl;
 	}
@@ -122,10 +121,6 @@ std::string get_cwd() {
 
 bool is_absolute(std::string str) {
 #if defined(_WIN32) || defined(WIN32)
-	cout << "WIN32\n";
-	if (str.size() > 2) {
-		cout << "WIN32\n";
-	}
 	if (str.size() > 2 && str.substr(1, 2).compare(":\\") == 0) {
 		return true;
 	}
@@ -168,14 +163,11 @@ int exec_player(std::string player, std::string composition,
 		std::cerr << "Exec failed." << "." << endl;
 		return 1;
 	default:
-		std::cout << "Process created with pid " << pid << "." << endl;
 		int status;
 
 		while (!WIFEXITED(status)) {
 			waitpid(pid, &status, 0);
 		}
-		std::cout << "Process exited with " << WEXITSTATUS(status) << "."
-				<< endl;
 		return 0;
 	}
 #endif
@@ -254,17 +246,12 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
-	cout << "Player:" << player << endl;
-	cout << "Composition:" << composition << endl;
-
 	while(composition.length() > 0 && composition.substr(composition.length() - 1) == "/") {
 		composition = composition.substr(0, composition.length() - 1);
 	}
 
-	std::cout << "WATS:" << wat.size() << endl;
 	if (wat.size() > 0) {
 		composition = composition + "#web_auth_token=" + url_encode(wat);
-		std::cout << "Final comp: " << composition << "." << endl;
 	}
 
 	return exec_player(player, composition, playerArgs);
