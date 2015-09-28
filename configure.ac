@@ -9,6 +9,12 @@ AM_INIT_AUTOMAKE()
 
 AC_PROG_CXX
 
+AC_CANONICAL_HOST
+case $host_os in
+  *mingw*) mingw=true ;;
+  *) mingw=false ;;
+esac
+AM_CONDITIONAL([MINGW], [test x$mingw = xtrue])
 
 AC_CONFIG_FILES(Makefile src/Makefile)
 AC_OUTPUT
